@@ -1,6 +1,6 @@
 class Quartz::GoStruct
 
-  attr_reader :struct_methods
+  attr_reader :struct_name, :struct_methods
 
   def initialize(struct_name, method_info, process)
     @struct_name = struct_name
