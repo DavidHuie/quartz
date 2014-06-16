@@ -2,4 +2,6 @@ language: go
 
 go: 1.2.1
 
+before_script: bundle install
+
 script: bundle exec rake
