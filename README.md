@@ -69,6 +69,12 @@ quartz.Start()
 
 ## In Ruby
 
+Naturally:
+
+```shell
+$ gem install quartz
+```
+
 After you've found created a `go run`-able file, create a Go process wrapper that
 points to that file:
 
