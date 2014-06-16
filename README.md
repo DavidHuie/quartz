@@ -2,7 +2,7 @@
 
 Quartz enables you to call Go code from within your
 Ruby code. This is accomplished by running a Go process
-alongside your Ruby application in a thread, and using
+alongside your Ruby application in a thread and using
 UNIX domain sockets for communicating between the two
 processes.
 
@@ -17,7 +17,7 @@ import (
 ```
 
 Quartz maintains most of Go's native RPC interface. Thus, export a struct
-by calling this in your `main` function:
+by calling this to your `main` function:
 
 ```go
 myStruct := &myStructType{}
@@ -46,7 +46,7 @@ type Args struct {
 }
 
 type Response struct {
-	X int
+	Sum int
 }
 
 func (t *Adder) Add(args Args, response *Response) error {
@@ -75,6 +75,7 @@ To call a method on a struct:
 
 ```ruby
 client[:adder].call('Add', 'A' => 2, 'B' => 5)
+# => { 'Sum' => 7 }
 ```
 
 ## Copyright
