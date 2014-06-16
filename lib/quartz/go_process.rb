@@ -16,7 +16,7 @@ class Quartz::GoProcess
   end
 
   def socket
-    @socket ||= UNIXSocket.new(@socket_path)
+    Thread.current[:quartz_socket] ||= UNIXSocket.new(@socket_path)
   end
 
   def block_until_server_starts
