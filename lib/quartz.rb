@@ -3,14 +3,14 @@ require 'socket'
 
 s = UNIXSocket.new("/tmp/quartz.sock")
 
-# payload = {
-#   'method' => 'Quartz.GetMetadata',
-#   'params' => [],
-#   'id' => 1
-# }
+payload = {
+  'method' => 'Quartz.GetMetadata',
+  'params' => [],
+  'id' => 1
+}
 
-# s.send(payload.to_json, 0)
-# puts s.recv(100)
+s.send(payload.to_json, 0)
+puts s.recv(1000)
 
 payload = {
   'method' => 'Quartz.Call',
@@ -21,4 +21,4 @@ payload = {
 }
 
 s.send(payload.to_json, 0)
-puts s.recv(100)
+puts s.recv(1000)
