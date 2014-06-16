@@ -1,9 +1,9 @@
 = quartz
 
-Description goes here.
+A gem for calling #golang code from ruby
 
 == Contributing to quartz
- 
+
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
 * Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it.
 * Fork the project.
@@ -16,4 +16,3 @@ Description goes here.
 
 Copyright (c) 2014 David Huie. See LICENSE.txt for
 further details.
-
