@@ -77,19 +77,11 @@ Naturally:
 $ gem install quartz
 ```
 
-After you've found created a `go run`-able file, create a Go process wrapper that
+After you've found created a `go run`-able file, create a Go client that
 points to that file:
 
 ```ruby
-require 'quartz'
-
-go_process = Quartz::GoProcess.new(file_path: 'spec/test.go')
-```
-
-Now, you can create a client:
-
-```ruby
-client = Quartz::Client.new(go_process)
+client = Quartz::Client.new(file_path: 'spec/test.go')
 ```
 
 To list exported structs:

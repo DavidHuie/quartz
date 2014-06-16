@@ -1,9 +1,8 @@
 class Quartz::Client
 
-  def initialize(go_process)
-    @process = go_process
+  def initialize(opts)
+    @process = Quartz::GoProcess.new(file_path: opts[:file_path])
     @structs = {}
-
     @process.get_metadata.each do |struct_name, metadata|
       @structs[struct_name.to_sym] = Quartz::GoStruct.new(struct_name, metadata, @process)
     end
