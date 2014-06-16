@@ -1,20 +1,35 @@
 class Quartz::GoProcess
 
   def initialize(opts)
-    @socket_name = "/tmp/quartz#{rand(10000)}.sock"
-    ENV['QUARTZ_SOCKET'] = @socket_name
+    @socket_path = "/tmp/quartz#{rand(10000)}.sock"
+    ENV['QUARTZ_SOCKET'] = @socket_path
 
     if opts[:file_path]
       @go_process = Thread.new { `go run #{opts[:file_path]} }` }
     elsif opts[:bin_path]
       @go_process = Thread.new { `#{opts[:bin_path]} }` }
     else
-      raise 'Missing go binary path'
+      raise 'Missing go binary'
     end
 
-    sleep(1)
+    block_until_server_starts
+  end
 
-    @socket = UNIXSocket.new(@socket_name)
+  def socket
+    @socket ||= UNIXSocket.new(@socket_path)
+  end
+
+  def block_until_server_starts
+    max_retries = 10
+    retries = 0
+    delay = 0.1 # seconds
+
+    loop do
+      raise 'RPC server not starting' if retries > max_retries
+      return if File.exists?(@socket_path)
+      sleep(delay * retries * 2**retries)
+      retries += 1
+    end
   end
 
   def get_metadata
@@ -24,7 +39,7 @@ class Quartz::GoProcess
       'id' => 1
     }
 
-    @socket.send(payload.to_json, 0)
+    socket.send(payload.to_json, 0)
     read
   end
 
@@ -39,14 +54,14 @@ class Quartz::GoProcess
       'id' => 1
     }
 
-    @socket.send(payload.to_json, 0)
+    socket.send(payload.to_json, 0)
     read
   end
 
   MAX_MESSAGE_SIZE = 1_000_000_000 # Bytes
 
   def read
-    JSON(@socket.recv(MAX_MESSAGE_SIZE))['result']
+    JSON(socket.recv(MAX_MESSAGE_SIZE))['result']
   end
 
 end
