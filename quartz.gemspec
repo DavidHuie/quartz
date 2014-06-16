@@ -32,6 +32,7 @@ Gem::Specification.new do |s|
     "lib/quartz/client.rb",
     "lib/quartz/go_process.rb",
     "lib/quartz/go_struct.rb",
+    "quartz.gemspec",
     "spec/client_spec.rb",
     "spec/go_process_spec.rb",
     "spec/go_struct_spec.rb",
