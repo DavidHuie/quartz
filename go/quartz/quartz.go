@@ -119,7 +119,7 @@ func (q *Quartz) GetMetadata(_ interface{}, value *map[string]*StructMetadata) e
 
 func init() {
 	var err error
-	listener, err = net.Listen("unix", "/tmp/quartz.sock")
+	listener, err = net.Listen("unix", os.Getenv("QUARTZ_SOCKET"))
 	if err != nil {
 		panic(err)
 	}
