@@ -5,6 +5,12 @@ Ruby code. This is accomplished by running a Go program
 as a child process of your Ruby application and using UNIX domain sockets
 for communication.
 
+With this gem, you can now write performance critical code in Go, and that
+code can be called from anywhere in a Ruby project.
+
+To see some real world examples where Go can aid a Ruby project, please see
+the `examples/` directory.
+
 ## Defining exportable structs
 
 Quartz shares Go code by exporting methods on a struct to Ruby.
