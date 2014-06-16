@@ -41,7 +41,7 @@ func (t *Adder) Add(args Args, response *Response) error {
 ## Preparing a Quartz RPC server in Go
 
 Instead of integrating Quartz into an existing Go application,
-it is recommended that a new `go run`-able file is created
+it is recommended to create a new `go run`-able file
 that explicitly defines the structs that should be available
 to Ruby.
 
