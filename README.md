@@ -90,11 +90,25 @@ Now, you can create a client:
 client = Quartz::Client.new(go_process)
 ```
 
+To list exported structs:
+
+```ruby
+client.structs
+=> [:my_adder]
+```
+
+To list a struct's exported methods:
+
+```ruby
+client[:my_adder].struct_methods
+=> ["Add"]
+```
+
 To call a method on a struct:
 
 ```ruby
 client[:my_adder].call('Add', 'A' => 2, 'B' => 5)
-# => { 'Sum' => 7 }
+=> { 'Sum' => 7 }
 ```
 
 ## Copyright
