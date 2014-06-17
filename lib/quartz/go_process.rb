@@ -1,5 +1,11 @@
 class Quartz::GoProcess
 
+  attr_reader :temp_file_path
+
+  def self.processes
+    @processes ||= []
+  end
+
   def initialize(opts)
     @socket_path = "/tmp/quartz_#{rand(10000)}.sock"
     ENV['QUARTZ_SOCKET'] = @socket_path
@@ -13,30 +19,21 @@ class Quartz::GoProcess
     end
 
     block_until_server_starts
-    register_pid
+    self.class.processes << self
   end
 
   def compile_and_run(path)
-    temp_file_path = "/tmp/quartz_runner_#{rand(10000)}"
+    @temp_file_path = "/tmp/quartz_runner_#{rand(10000)}"
 
-    unless system('go', 'build', '-o', temp_file_path, path)
+    unless system('go', 'build', '-o', @temp_file_path, path)
       raise 'Go compilation failed'
     end
 
-    @go_process = IO.popen(temp_file_path)
-    self.class.temp_files << temp_file_path
+    @go_process = IO.popen(@temp_file_path)
   end
 
-  def self.temp_files
-    @temp_files ||= []
-  end
-
-  def self.child_pids
-    @child_pids ||= []
-  end
-
-  def register_pid
-    self.class.child_pids << @go_process.pid
+  def pid
+    @go_process.pid
   end
 
   def socket
@@ -94,16 +91,17 @@ class Quartz::GoProcess
     JSON(socket.recv(MAX_MESSAGE_SIZE))
   end
 
-end
-
-at_exit do
-  Quartz::GoProcess.child_pids.each do |pid|
+  def cleanup
     Process.kill('SIGTERM', pid)
+    Process.wait(pid)
+    File.delete(@temp_file_path) if @temp_file_path
+    self.class.processes.delete(self)
   end
 
-  Process.waitall
-
-  Quartz::GoProcess.temp_files.each do |file_path|
-    File.delete(file_path)
+  def self.cleanup
+    processes.each { |p| p.cleanup }
   end
+
 end
+
+at_exit { Quartz::GoProcess.cleanup }

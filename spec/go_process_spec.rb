@@ -34,4 +34,28 @@ describe Quartz::GoProcess do
     File.delete(temp_file)
   end
 
+  describe '.cleanup' do
+
+    context 'files' do
+
+      it "it deletes temporary files" do
+        File.exists?(process.temp_file_path).should be_true
+        process.cleanup
+        File.exists?(process.temp_file_path).should be_false
+      end
+
+    end
+
+    context 'processes' do
+
+      it "it kills child processes" do
+        File.exists?(process.temp_file_path).should be_true
+        process.cleanup
+        File.exists?(process.temp_file_path).should be_false
+      end
+
+    end
+
+  end
+
 end
