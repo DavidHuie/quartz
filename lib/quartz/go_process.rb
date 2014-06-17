@@ -1,18 +1,44 @@
 class Quartz::GoProcess
 
   def initialize(opts)
-    @socket_path = "/tmp/quartz#{rand(10000)}.sock"
+    @socket_path = "/tmp/quartz_#{rand(10000)}.sock"
     ENV['QUARTZ_SOCKET'] = @socket_path
 
     if opts[:file_path]
-      @go_process = Thread.new { `go run #{opts[:file_path]} }` }
-    elsif opts[:bin_path]
-      @go_process = Thread.new { `#{opts[:bin_path]} }` }
+      compile_and_run(opts[:file_path])
     else
       raise 'Missing go binary'
     end
 
     block_until_server_starts
+    register_pid
+    register_temp_file
+  end
+
+  def compile_and_run(path)
+    @temp_file_path = "/tmp/quartz_runner_#{rand(10000)}"
+
+    unless system('go', 'build', '-o', @temp_file_path, path)
+      raise 'Go compilation failed'
+    end
+
+    @go_process = IO.popen(@temp_file_path)
+  end
+
+  def self.temp_files
+    @temp_files ||= []
+  end
+
+  def self.child_pids
+    @child_pids ||= []
+  end
+
+  def register_pid
+    self.class.child_pids << @go_process.pid
+  end
+
+  def register_temp_file
+    self.class.temp_files << @temp_file_path
   end
 
   def socket
@@ -64,4 +90,16 @@ class Quartz::GoProcess
     JSON(socket.recv(MAX_MESSAGE_SIZE))['result']
   end
 
+end
+
+at_exit do
+  Quartz::GoProcess.child_pids.each do |pid|
+    Process.kill('SIGTERM', pid)
+  end
+
+  Process.waitall
+
+  Quartz::GoProcess.temp_files.each do |file_path|
+    File.delete(file_path)
+  end
 end

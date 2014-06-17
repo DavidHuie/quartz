@@ -118,8 +118,13 @@ func (q *Quartz) GetMetadata(_ interface{}, value *map[string]*StructMetadata) e
 }
 
 func init() {
+	socket_path := os.Getenv("QUARTZ_SOCKET")
+	if socket_path == "" {
+		socket_path = "/tmp/quartz.socket"
+	}
+
 	var err error
-	listener, err = net.Listen("unix", os.Getenv("QUARTZ_SOCKET"))
+	listener, err = net.Listen("unix", socket_path)
 	if err != nil {
 		panic(err)
 	}
@@ -131,7 +136,7 @@ func init() {
 
 	// Cleanup the socket file when the server is killed
 	sigc := make(chan os.Signal)
-	signal.Notify(sigc, os.Interrupt, os.Kill, syscall.SIGTERM)
+	signal.Notify(sigc, syscall.SIGTERM)
 	go func() {
 		<-sigc
 		err := listener.Close()
