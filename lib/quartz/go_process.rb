@@ -92,14 +92,20 @@ class Quartz::GoProcess
   end
 
   def cleanup
-    Process.kill('SIGTERM', pid)
-    Process.wait(pid)
-    File.delete(@temp_file_path) if @temp_file_path
-    self.class.processes.delete(self)
+    unless @killed_go_process
+      Process.kill('SIGTERM', pid)
+      Process.wait(pid)
+      @killed_go_process = true
+    end
+
+    if @temp_file_path && File.exists?(@temp_file_path)
+      File.delete(@temp_file_path)
+    end
   end
 
   def self.cleanup
-    processes.each { |p| p.cleanup }
+    @processes.each(&:cleanup)
+    @processes = []
   end
 
 end

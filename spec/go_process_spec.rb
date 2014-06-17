@@ -51,7 +51,7 @@ describe Quartz::GoProcess do
       it "it kills child processes" do
         File.exists?(process.temp_file_path).should be_true
         process.cleanup
-        File.exists?(process.temp_file_path).should be_false
+        $?.exited?.should be_true
       end
 
     end
