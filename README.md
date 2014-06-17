@@ -43,7 +43,7 @@ func (t *Adder) Add(args Args, response *Response) error {
 ## Preparing a Quartz RPC server in Go
 
 Instead of integrating Quartz into an existing Go application,
-it is recommended to create a new `go run`-able file
+it is recommended to create a new program
 that explicitly defines the structs that should be available
 to Ruby.
 
@@ -77,11 +77,18 @@ Naturally:
 $ gem install quartz
 ```
 
-After you've found created a `go run`-able file, create a Go client that
+If you have a `go run`-able file, you can create a Go client that
 points to that file:
 
 ```ruby
-client = Quartz::Client.new(file_path: 'spec/test.go')
+client = Quartz::Client.new(file_path: 'my_adder.go')
+```
+
+If you compiled the Go program yourself, you can create a client
+that points to the binary like this:
+
+```ruby
+client = Quartz::Client.new(bin_path: 'my_adder_binary')
 ```
 
 To list exported structs:

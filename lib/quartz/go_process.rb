@@ -6,23 +6,25 @@ class Quartz::GoProcess
 
     if opts[:file_path]
       compile_and_run(opts[:file_path])
+    elsif opts[:bin_path]
+      @go_process = IO.popen(opts[:bin_path])
     else
       raise 'Missing go binary'
     end
 
     block_until_server_starts
     register_pid
-    register_temp_file
   end
 
   def compile_and_run(path)
-    @temp_file_path = "/tmp/quartz_runner_#{rand(10000)}"
+    temp_file_path = "/tmp/quartz_runner_#{rand(10000)}"
 
-    unless system('go', 'build', '-o', @temp_file_path, path)
+    unless system('go', 'build', '-o', temp_file_path, path)
       raise 'Go compilation failed'
     end
 
-    @go_process = IO.popen(@temp_file_path)
+    @go_process = IO.popen(temp_file_path)
+    self.class.temp_files << temp_file_path
   end
 
   def self.temp_files
@@ -35,10 +37,6 @@ class Quartz::GoProcess
 
   def register_pid
     self.class.child_pids << @go_process.pid
-  end
-
-  def register_temp_file
-    self.class.temp_files << @temp_file_path
   end
 
   def socket

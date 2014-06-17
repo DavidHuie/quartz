@@ -25,4 +25,13 @@ describe Quartz::GoProcess do
 
   end
 
+  it 'works with an existing binary file' do
+    temp_file = "/tmp/quartz_test_#{rand(10000)}"
+    system('go', 'build', '-o', temp_file, 'spec/test.go')
+    process = Quartz::GoProcess.new(bin_path: temp_file)
+    result = process.call('adder', 'Add', { 'A' => 5, 'B' => 6 })
+    result.should eq({"X"=>11})
+    File.delete(temp_file)
+  end
+
 end
