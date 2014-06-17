@@ -64,7 +64,13 @@ class Quartz::GoProcess
     }
 
     socket.send(payload.to_json, 0)
-    read
+    response = read
+
+    if response['error']
+      raise "Metadata error: #{read['error']}"
+    end
+
+    response['result']
   end
 
   def call(struct_name, method, args)
@@ -85,7 +91,7 @@ class Quartz::GoProcess
   MAX_MESSAGE_SIZE = 1_000_000_000 # Bytes
 
   def read
-    JSON(socket.recv(MAX_MESSAGE_SIZE))['result']
+    JSON(socket.recv(MAX_MESSAGE_SIZE))
   end
 
 end

@@ -30,7 +30,13 @@ class Quartz::GoStruct
       # TODO: validate type
     end
 
-    @process.call(@struct_name, method_name, args)
+    response = @process.call(@struct_name, method_name, args)
+
+    if response['error']
+      raise "Error calling #{method_name}: #{response['error']}"
+    end
+
+    response['result']
   end
 
 end

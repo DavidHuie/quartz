@@ -20,7 +20,7 @@ describe Quartz::GoProcess do
 
     it 'is able to call a method on a struct' do
       result = process.call('adder', 'Add', { 'A' => 5, 'B' => 6 })
-      result.should eq({"X"=>11})
+      result.should eq({"id"=>1, "result"=>{"X"=>11}, "error"=>nil})
     end
 
   end
@@ -30,7 +30,7 @@ describe Quartz::GoProcess do
     system('go', 'build', '-o', temp_file, 'spec/test.go')
     process = Quartz::GoProcess.new(bin_path: temp_file)
     result = process.call('adder', 'Add', { 'A' => 5, 'B' => 6 })
-    result.should eq({"X"=>11})
+    result.should eq({"id"=>1, "result"=>{"X"=>11}, "error"=>nil})
     File.delete(temp_file)
   end
 
