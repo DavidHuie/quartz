@@ -17,9 +17,9 @@ the `examples/` directory.
 
 Quartz shares Go code by exporting methods on a struct to Ruby.
 
-Quartz requires that all arguments to exported struct methods be JSON-serializable
+Quartz requires that all arguments to exported struct methods be JSON serializable
 types. Additionally, the arguments to an exported method should be of the form
-`(A, *B)`, where `A` and `B` are JSON-serializable types. The method should also
+`(A, *B)`, where `A` and `B` are JSON serializable types. The method should also
 return an error. Here's an example of an exportable struct and method:
 
 ```go

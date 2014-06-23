@@ -15,7 +15,7 @@ type Quartz struct {
 	Registry map[string]*StructMetadata
 }
 
-// Return's the struct registry. This method is exported via RPC
+// Returns the struct registry. This method is exported via RPC
 // so that the Ruby client can have knowledge about which structs and
 // which methods are exported.
 func (q *Quartz) GetMetadata(_ interface{}, value *map[string]*StructMetadata) error {
