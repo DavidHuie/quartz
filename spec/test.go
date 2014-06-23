@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+
 	"github.com/DavidHuie/quartz/go/quartz"
 )
 
@@ -18,6 +20,10 @@ type Response struct {
 func (t *Test) Add(args Args, response *Response) error {
 	*response = Response{args.A + args.B}
 	return nil
+}
+
+func (t *Test) AddError(args Args, response *Response) error {
+	return errors.New("Adding error")
 }
 
 func main() {

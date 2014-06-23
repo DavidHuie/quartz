@@ -102,8 +102,10 @@ func (q *Quartz) Call(args *CallArgs, response *interface{}) error {
 	unmarshallerValue.Call([]reflect.Value{methodArgsValue, argStructPointer})
 
 	// Call the method
-	// TODO: check for errors
-	method.Func.Call([]reflect.Value{structValue, argStruct, responseValuePointer})
+	err := method.Func.Call([]reflect.Value{structValue, argStruct, responseValuePointer})
+	if !err[0].IsNil() {
+		return err[0].Interface().(error)
+	}
 
 	// Set this method's response value
 	rpcResponse := reflect.Indirect(responseValuePointer)

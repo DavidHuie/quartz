@@ -33,7 +33,7 @@ class Quartz::GoStruct
     response = @process.call(@struct_name, method_name, args)
 
     if response['error']
-      raise "Error calling #{method_name}: #{response['error']}"
+      raise Quartz::ResponseError.new(response['error'])
     end
 
     response['result']

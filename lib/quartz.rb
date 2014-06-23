@@ -1,7 +1,9 @@
 require 'json'
 require 'socket'
 
-module Quartz; end
+module Quartz
+  class ResponseError < StandardError; end
+end
 
 require 'quartz/go_process'
 require 'quartz/go_struct'

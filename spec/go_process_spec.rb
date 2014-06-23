@@ -9,7 +9,7 @@ describe Quartz::GoProcess do
     context 'with a go file' do
 
       it 'pulls metadata' do
-        process.get_metadata.should eq({"adder"=>{"NameToMethodMetadata"=>{"Add"=>{"ArgumentToType"=>{"A"=>"int", "B"=>"int"}}}}})
+        process.get_metadata.should eq("adder" => {"NameToMethodMetadata"=>{"Add"=>{"ArgumentToType"=>{"A"=>"int", "B"=>"int"}}, "AddError"=>{"ArgumentToType"=>{"A"=>"int", "B"=>"int"}}}})
       end
 
     end
