@@ -1,6 +1,6 @@
 # quartz
 
-[![Build Status](https://travis-ci.org/DavidHuie/quartz.svg?branch=master)](https://travis-ci.org/DavidHuie/quartz)
+[![Build Status](https://travis-ci.org/DavidHuie/quartz.svg?branch=master)](https://travis-ci.org/DavidHuie/quartz) [![Code Climate](https://codeclimate.com/github/DavidHuie/quartz.png)](https://codeclimate.com/github/DavidHuie/quartz)
 
 Quartz enables you to call Go code from within your
 Ruby code. This is accomplished by running a Go program
