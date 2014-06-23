@@ -72,12 +72,8 @@ class Quartz::GoProcess
 
   def call(struct_name, method, args)
     payload = {
-      'method' => 'Quartz.Call',
-      'params' => [{
-          'StructName' => struct_name,
-          'Method' => method,
-          'MethodArgs' => args.to_json
-        }],
+      'method' => "#{struct_name}.#{method}",
+      'params' => [args],
       'id' => 1
     }
 

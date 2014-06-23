@@ -1,7 +1,6 @@
 package quartz
 
 import (
-	"encoding/json"
 	"net"
 	"net/rpc"
 	"net/rpc/jsonrpc"
@@ -38,8 +37,6 @@ func NewStructMetadata(targetStruct interface{}) *StructMetadata {
 }
 
 func RegisterName(name string, s interface{}) error {
-	// TODO: check that s is a pointer
-
 	quartz.Registry[name] = NewStructMetadata(s)
 
 	t := reflect.TypeOf(s)
@@ -56,62 +53,15 @@ func RegisterName(name string, s interface{}) error {
 
 		quartz.Registry[name].NameToMethodMetadata[method.Name] = metadata
 	}
-
-	return nil
+	return rpc.RegisterName(name, s)
 }
 
 func StructFieldToType(t reflect.Type) map[string]string {
 	fieldToType := make(map[string]string)
-
 	for i := 0; i < t.NumField(); i++ {
 		fieldToType[t.Field(i).Name] = t.Field(i).Type.String()
 	}
-
 	return fieldToType
-}
-
-type CallArgs struct {
-	StructName string
-	Method     string
-	MethodArgs string
-}
-
-func (q *Quartz) Call(args *CallArgs, response *interface{}) error {
-
-	// TODO: validate args
-
-	metadata := quartz.Registry[args.StructName]
-	method := metadata.NameToMethodMetadata[args.Method].Method
-
-	structValue := reflect.ValueOf(metadata.TargetStruct)
-	methodArgsValue := reflect.ValueOf([]byte(args.MethodArgs))
-	unmarshallerValue := reflect.ValueOf(json.Unmarshal)
-	functionResponse := reflect.Indirect(reflect.ValueOf(response))
-
-	// Determine what arguments the function requires
-	argsType := method.Type.In(1)
-	responseType := method.Type.In(2).Elem()
-	responseValuePointer := reflect.New(responseType)
-
-	// Create a value that's a direct reference to the arg argument
-	argStructPointer := reflect.New(argsType)
-	argStruct := reflect.Indirect(argStructPointer)
-
-	// Unmarshall the argument json
-	// TODO: check for unmarshalling errors
-	unmarshallerValue.Call([]reflect.Value{methodArgsValue, argStructPointer})
-
-	// Call the method
-	err := method.Func.Call([]reflect.Value{structValue, argStruct, responseValuePointer})
-	if !err[0].IsNil() {
-		return err[0].Interface().(error)
-	}
-
-	// Set this method's response value
-	rpcResponse := reflect.Indirect(responseValuePointer)
-	functionResponse.Set(rpcResponse)
-
-	return nil
 }
 
 func (q *Quartz) GetMetadata(_ interface{}, value *map[string]*StructMetadata) error {
