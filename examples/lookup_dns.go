@@ -16,6 +16,8 @@ type FindIPsResponse struct {
 	HostnameToIPs map[string][]net.IP
 }
 
+// Concurrently resolves all hostnames in the input struct
+// to IPs.
 func (r *Resolver) FindIPs(args FindIPsArgs, response *FindIPsResponse) error {
 	*response = FindIPsResponse{}
 	response.HostnameToIPs = make(map[string][]net.IP)
