@@ -1,7 +1,6 @@
 package quartz
 
 import (
-	"encoding/json"
 	"net"
 	"net/rpc"
 	"net/rpc/jsonrpc"
@@ -11,19 +10,25 @@ import (
 	"syscall"
 )
 
-var (
-	quartz   *Quartz
-	listener net.Listener
-)
-
+// This holds information about exported structs.
 type Quartz struct {
 	Registry map[string]*StructMetadata
 }
 
-type MethodMetadata struct {
-	Method         reflect.Method `json:"-"`
-	ArgumentToType map[string]string
+// Return's the struct registry. This method is exported via RPC
+// so that the Ruby client can have knowledge about which structs and
+// which methods are exported.
+func (q *Quartz) GetMetadata(_ interface{}, value *map[string]*StructMetadata) error {
+	*value = q.Registry
+	return nil
 }
+
+var (
+	quartz = &Quartz{
+		Registry: make(map[string]*StructMetadata),
+	}
+	socketPath = "/tmp/quartz.socket"
+)
 
 type StructMetadata struct {
 	NameToMethodMetadata map[string]*MethodMetadata
@@ -37,106 +42,55 @@ func NewStructMetadata(targetStruct interface{}) *StructMetadata {
 	}
 }
 
+type MethodMetadata struct {
+	Method         reflect.Method `json:"-"`
+	ArgumentToType map[string]string
+}
+
+// Exports a struct via RPC and generates metadata for each of the struct's methods.
 func RegisterName(name string, s interface{}) error {
-	// TODO: check that s is a pointer
-
 	quartz.Registry[name] = NewStructMetadata(s)
-
 	t := reflect.TypeOf(s)
 	for i := 0; i < t.NumMethod(); i++ {
 		method := t.Method(i)
-
 		// TODO: only export methods with JSON serializable arguments
 		// and responses.
-
 		metadata := &MethodMetadata{
 			method,
 			StructFieldToType(method.Type.In(1)),
 		}
-
 		quartz.Registry[name].NameToMethodMetadata[method.Name] = metadata
 	}
-
-	return nil
+	return rpc.RegisterName(name, s)
 }
 
+// Given a struct type, creates a mapping of field name
+// to string representation of the field name's type.
 func StructFieldToType(t reflect.Type) map[string]string {
 	fieldToType := make(map[string]string)
-
 	for i := 0; i < t.NumField(); i++ {
 		fieldToType[t.Field(i).Name] = t.Field(i).Type.String()
 	}
-
 	return fieldToType
 }
 
-type CallArgs struct {
-	StructName string
-	Method     string
-	MethodArgs string
-}
-
-func (q *Quartz) Call(args *CallArgs, response *interface{}) error {
-
-	// TODO: validate args
-
-	metadata := quartz.Registry[args.StructName]
-	method := metadata.NameToMethodMetadata[args.Method].Method
-
-	structValue := reflect.ValueOf(metadata.TargetStruct)
-	methodArgsValue := reflect.ValueOf([]byte(args.MethodArgs))
-	unmarshallerValue := reflect.ValueOf(json.Unmarshal)
-	functionResponse := reflect.Indirect(reflect.ValueOf(response))
-
-	// Determine what arguments the function requires
-	argsType := method.Type.In(1)
-	responseType := method.Type.In(2).Elem()
-	responseValuePointer := reflect.New(responseType)
-
-	// Create a value that's a direct reference to the arg argument
-	argStructPointer := reflect.New(argsType)
-	argStruct := reflect.Indirect(argStructPointer)
-
-	// Unmarshall the argument json
-	// TODO: check for unmarshalling errors
-	unmarshallerValue.Call([]reflect.Value{methodArgsValue, argStructPointer})
-
-	// Call the method
-	err := method.Func.Call([]reflect.Value{structValue, argStruct, responseValuePointer})
-	if !err[0].IsNil() {
-		return err[0].Interface().(error)
-	}
-
-	// Set this method's response value
-	rpcResponse := reflect.Indirect(responseValuePointer)
-	functionResponse.Set(rpcResponse)
-
-	return nil
-}
-
-func (q *Quartz) GetMetadata(_ interface{}, value *map[string]*StructMetadata) error {
-	*value = q.Registry
-	return nil
-}
-
-func init() {
-	socket_path := os.Getenv("QUARTZ_SOCKET")
-	if socket_path == "" {
-		socket_path = "/tmp/quartz.socket"
-	}
-
-	var err error
-	listener, err = net.Listen("unix", socket_path)
+func Start() {
+	// Start the server and accept connections on a
+	// UNIX domain socket.
+	rpc.Register(quartz)
+	listener, err := net.Listen("unix", socketPath)
 	if err != nil {
 		panic(err)
 	}
+	for {
+		conn, err := listener.Accept()
+		if err != nil {
+			panic(err)
+		}
+		go jsonrpc.ServeConn(conn)
+	}
 
-	quartz = &Quartz{}
-	quartz.Registry = make(map[string]*StructMetadata)
-
-	rpc.Register(quartz)
-
-	// Cleanup the socket file when the server is killed
+	// Destroy the socket file when the server is killed.
 	sigc := make(chan os.Signal)
 	signal.Notify(sigc, syscall.SIGTERM)
 	go func() {
@@ -149,12 +103,9 @@ func init() {
 	}()
 }
 
-func Start() {
-	for {
-		conn, err := listener.Accept()
-		if err != nil {
-			panic(err)
-		}
-		go jsonrpc.ServeConn(conn)
+func init() {
+	// The Ruby gem sets this environment variable for us.
+	if os.Getenv("QUARTZ_SOCKET") != "" {
+		socketPath = os.Getenv("QUARTZ_SOCKET")
 	}
 }

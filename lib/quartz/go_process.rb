@@ -57,6 +57,8 @@ class Quartz::GoProcess
     payload = {
       'method' => 'Quartz.GetMetadata',
       'params' => [],
+      # This parameter isn't needed because we use a different
+      # connection for each thread.
       'id' => 1
     }
 
@@ -72,15 +74,10 @@ class Quartz::GoProcess
 
   def call(struct_name, method, args)
     payload = {
-      'method' => 'Quartz.Call',
-      'params' => [{
-          'StructName' => struct_name,
-          'Method' => method,
-          'MethodArgs' => args.to_json
-        }],
+      'method' => "#{struct_name}.#{method}",
+      'params' => [args],
       'id' => 1
     }
-
     socket.send(payload.to_json, 0)
     read
   end
