@@ -76,7 +76,6 @@ class Quartz::GoProcess
       'params' => [args],
       'id' => 1
     }
-
     socket.send(payload.to_json, 0)
     read
   end
