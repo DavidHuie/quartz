@@ -40,6 +40,10 @@ func (t *Adder) Add(args Args, response *Response) error {
 }
 ```
 
+For more information regarding Go's RPC rules, which must still be followed
+when using quartz, please examine the official documentation for
+the `net/rpc` package [here](http://golang.org/pkg/net/rpc/).
+
 ## Preparing a Quartz RPC server in Go
 
 Instead of integrating Quartz into an existing Go application,
