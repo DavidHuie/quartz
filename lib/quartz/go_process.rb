@@ -57,6 +57,8 @@ class Quartz::GoProcess
     payload = {
       'method' => 'Quartz.GetMetadata',
       'params' => [],
+      # This parameter isn't needed because we use a different
+      # connection for each thread.
       'id' => 1
     }
 

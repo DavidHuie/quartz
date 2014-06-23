@@ -27,7 +27,7 @@ class Quartz::GoStruct
         raise "Invalid argument: #{k}"
       end
 
-      # TODO: validate type
+      # TODO: validate types
     end
 
     response = @process.call(@struct_name, method_name, args)
