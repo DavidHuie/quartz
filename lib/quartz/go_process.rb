@@ -6,8 +6,12 @@ class Quartz::GoProcess
     @processes ||= []
   end
 
+  def seed
+    @seed ||= rand(10000)
+  end
+
   def initialize(opts)
-    @socket_path = "/tmp/quartz_#{rand(10000)}.sock"
+    @socket_path = "/tmp/quartz_#{seed}.sock"
     ENV['QUARTZ_SOCKET'] = @socket_path
 
     if opts[:file_path]
@@ -23,7 +27,7 @@ class Quartz::GoProcess
   end
 
   def compile_and_run(path)
-    @temp_file_path = "/tmp/quartz_runner_#{rand(10000)}"
+    @temp_file_path = "/tmp/quartz_runner_#{seed}"
 
     unless system('go', 'build', '-o', @temp_file_path, path)
       raise 'Go compilation failed'
@@ -37,7 +41,7 @@ class Quartz::GoProcess
   end
 
   def socket
-    Thread.current[:quartz_socket] ||= UNIXSocket.new(@socket_path)
+    Thread.current["quartz_socket_#{seed}".to_sym] ||= UNIXSocket.new(@socket_path)
   end
 
   def block_until_server_starts
