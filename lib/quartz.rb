@@ -6,6 +6,7 @@ module Quartz
   class ResponseError < StandardError; end
 end
 
+require 'quartz/exceptions'
 require 'quartz/go_process'
 require 'quartz/go_struct'
 require 'quartz/client'

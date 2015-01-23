@@ -16,7 +16,7 @@ class Quartz::GoStruct
 
   def call(method_name, args)
     unless @struct_methods.include?(method_name)
-      raise "Invalid method: #{method_name}"
+      raise Quartz::ArgumentError, "Invalid method: #{method_name}"
     end
 
     arg_info = @method_name_to_arg_info[method_name]
@@ -24,7 +24,7 @@ class Quartz::GoStruct
     # Validate arguments
     args.each do |k, v|
       unless arg_info.include?(k)
-        raise "Invalid argument: #{k}"
+        raise Quartz::ArgumentError, "Invalid argument: #{k}"
       end
 
       # TODO: validate types
