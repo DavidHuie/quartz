@@ -1,5 +1,7 @@
 module Quartz::Validations
 
+  GO_FILE_LOCATION = 'src/github.com/DavidHuie/quartz/go/quartz/quartz.go'
+
   def self.check_for_go
     go_exists = ENV['PATH'].split(File::PATH_SEPARATOR).any? do |directory|
       File.exist?(File.join(directory, 'go'))
@@ -12,7 +14,7 @@ module Quartz::Validations
     current_pulse = File.read(File.join(File.dirname(__FILE__), '../../go/quartz/quartz.go'))
 
     installed_pulse_dir = ENV['GOPATH'].split(File::PATH_SEPARATOR).select do |directory|
-      File.exist?(File.join(directory, 'src/github.com/DavidHuie/quartz/go/quartz/quartz.go'))
+      File.exist?(File.join(directory, Quartz::Validations::GO_FILE_LOCATION))
     end[0]
 
     unless installed_pulse_dir
@@ -20,7 +22,7 @@ module Quartz::Validations
     end
 
     installed_pulse = File.read(File.join(installed_pulse_dir,
-                                          'src/github.com/DavidHuie/quartz/go/quartz/quartz.go'))
+                                          Quartz::Validations::GO_FILE_LOCATION))
 
     if current_pulse != installed_pulse
       STDERR.write <<-EOS
