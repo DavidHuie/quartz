@@ -11,20 +11,20 @@ module Quartz::Validations
   end
 
   def self.check_go_quartz_version
-    current_pulse = File.read(File.join(File.dirname(__FILE__), '../../go/quartz/quartz.go'))
+    current_quartz = File.read(File.join(File.dirname(__FILE__), '../../go/quartz/quartz.go'))
 
-    installed_pulse_dir = ENV['GOPATH'].split(File::PATH_SEPARATOR).select do |directory|
+    installed_quartz_dir = ENV['GOPATH'].split(File::PATH_SEPARATOR).select do |directory|
       File.exist?(File.join(directory, Quartz::Validations::GO_FILE_LOCATION))
     end[0]
 
-    unless installed_pulse_dir
+    unless installed_quartz_dir
       raise "GOPATH not configured."
     end
 
-    installed_pulse = File.read(File.join(installed_pulse_dir,
+    installed_quartz = File.read(File.join(installed_quartz_dir,
                                           Quartz::Validations::GO_FILE_LOCATION))
 
-    if current_pulse != installed_pulse
+    if current_quartz != installed_quartz
       STDERR.write <<-EOS
 Warning: the version of Quartz in $GOPATH does not match
 the version packaged with the gem. Please update the Go
