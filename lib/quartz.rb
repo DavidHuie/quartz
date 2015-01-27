@@ -1,4 +1,5 @@
 require 'json'
+require 'securerandom'
 require 'socket'
 
 module Quartz

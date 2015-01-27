@@ -7,7 +7,7 @@ class Quartz::GoProcess
   end
 
   def initialize(opts)
-    @seed = rand(10000)
+    @seed = SecureRandom.hex
     @socket_path = "/tmp/quartz_#{seed}.sock"
     ENV['QUARTZ_SOCKET'] = @socket_path
 
