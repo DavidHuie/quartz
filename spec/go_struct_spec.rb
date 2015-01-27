@@ -15,7 +15,7 @@ describe Quartz::GoStruct do
 
     it 'is able to call a struct' do
       response = struct.call('Add', 'A' => 2, 'B' => 4)
-      response.should eq({'X' => 6})
+      expect(response).to eq({'X' => 6})
     end
 
     it 'raises an exception when an error is returned' do
