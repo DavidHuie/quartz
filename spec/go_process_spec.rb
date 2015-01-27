@@ -9,7 +9,7 @@ describe Quartz::GoProcess do
     context 'with a go file' do
 
       it 'pulls metadata' do
-        process.get_metadata.should eq("adder" => {"NameToMethodMetadata"=>{"Add"=>{"ArgumentToType"=>{"A"=>"int", "B"=>"int"}}, "AddError"=>{"ArgumentToType"=>{"A"=>"int", "B"=>"int"}}}})
+        expect(process.get_metadata).to eq("adder" => {"NameToMethodMetadata"=>{"Add"=>{"ArgumentToType"=>{"A"=>"int", "B"=>"int"}}, "AddError"=>{"ArgumentToType"=>{"A"=>"int", "B"=>"int"}}}})
       end
 
     end
@@ -20,7 +20,7 @@ describe Quartz::GoProcess do
 
     it 'is able to call a method on a struct' do
       result = process.call('adder', 'Add', { 'A' => 5, 'B' => 6 })
-      result.should eq({"id"=>1, "result"=>{"X"=>11}, "error"=>nil})
+      expect(result).to eq({"id"=>1, "result"=>{"X"=>11}, "error"=>nil})
     end
 
   end
@@ -30,7 +30,7 @@ describe Quartz::GoProcess do
     system('go', 'build', '-o', temp_file, 'spec/test.go')
     process = Quartz::GoProcess.new(bin_path: temp_file)
     result = process.call('adder', 'Add', { 'A' => 5, 'B' => 6 })
-    result.should eq({"id"=>1, "result"=>{"X"=>11}, "error"=>nil})
+    expect(result).to eq({"id"=>1, "result"=>{"X"=>11}, "error"=>nil})
     File.delete(temp_file)
   end
 
@@ -39,9 +39,9 @@ describe Quartz::GoProcess do
     context 'files' do
 
       it "it deletes temporary files" do
-        File.exists?(process.temp_file_path).should be_true
+        expect(File.exists?(process.temp_file_path)).to be_truthy
         process.cleanup
-        File.exists?(process.temp_file_path).should be_false
+        expect(File.exists?(process.temp_file_path)).to be_falsey
       end
 
     end
@@ -49,9 +49,18 @@ describe Quartz::GoProcess do
     context 'processes' do
 
       it "it kills child processes" do
-        File.exists?(process.temp_file_path).should be_true
+        expect(File.exists?(process.temp_file_path)).to be_truthy
         process.cleanup
-        $?.exited?.should be_true
+        expect($?.exited?).to be_truthy
+      end
+
+    end
+
+    context 'sockets' do
+
+      it 'cleans up sockets created by the go application' do
+        process.cleanup
+        expect(File.exists?(process.socket_path)).to be_falsey
       end
 
     end
