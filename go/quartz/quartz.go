@@ -82,13 +82,6 @@ func Start() {
 	if err != nil {
 		panic(err)
 	}
-	for {
-		conn, err := listener.Accept()
-		if err != nil {
-			panic(err)
-		}
-		go jsonrpc.ServeConn(conn)
-	}
 
 	// Destroy the socket file when the server is killed.
 	sigc := make(chan os.Signal)
@@ -101,6 +94,15 @@ func Start() {
 		}
 		os.Exit(0)
 	}()
+
+	// Accept connections
+	for {
+		conn, err := listener.Accept()
+		if err != nil {
+			panic(err)
+		}
+		go jsonrpc.ServeConn(conn)
+	}
 }
 
 func init() {

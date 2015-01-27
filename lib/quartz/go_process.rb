@@ -1,6 +1,6 @@
 class Quartz::GoProcess
 
-  attr_reader :seed, :temp_file_path
+  attr_reader :seed, :socket_path, :temp_file_path
 
   def self.processes
     @processes ||= []
