@@ -1,13 +1,9 @@
 class Quartz::GoProcess
 
-  attr_reader :temp_file_path
+  attr_reader :seed, :temp_file_path
 
   def self.processes
     @processes ||= []
-  end
-
-  def seed
-    @seed
   end
 
   def initialize(opts)
