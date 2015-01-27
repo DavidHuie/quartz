@@ -1,7 +1,8 @@
 language: go
-
-go: 1.2.1
-
+go: 1.4
+rvm:
+  - "2.1.5"
 before_script: bundle install
-
-script: bundle exec rake
+script:
+  - bundle exec rake
+  - go test ./go/quartz
