@@ -14,12 +14,6 @@ func newStructMetadata(targetStruct interface{}) *structMetadata {
 	}
 }
 
-type registry map[string]*structMetadata
-
-func newRegistry() registry {
-	return make(map[string]*structMetadata)
-}
-
 type methodMetadata struct {
 	Method         reflect.Method `json:"-"`
 	ArgumentToType map[string]string
