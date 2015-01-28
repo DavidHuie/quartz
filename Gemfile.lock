@@ -3,12 +3,6 @@ GEM
   specs:
     addressable (2.3.6)
     builder (3.2.2)
-    byebug (3.5.1)
-      columnize (~> 0.8)
-      debugger-linecache (~> 1.2)
-      slop (~> 3.6)
-    columnize (0.9.0)
-    debugger-linecache (1.2.0)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
     diff-lcs (1.2.5)
@@ -70,14 +64,12 @@ GEM
       multi_json (~> 1.0)
       simplecov-html (~> 0.8.0)
     simplecov-html (0.8.0)
-    slop (3.6.0)
     thread_safe (0.3.4)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  byebug (~> 3.5.1)
   jeweler (~> 2.0.1)
   rspec (~> 3.1.0)
   simplecov (~> 0.9.1)
