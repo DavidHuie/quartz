@@ -1,8 +1,18 @@
-language: go
-go: 1.4
+language: ruby
 rvm:
-  - "2.1.5"
-before_script: bundle install
+  - 2.1.5
+  # - 1.9.3
+  # - 2.0.0
+  # - 2.2.0
+before_script:
+  - bundle install
+  - sudo apt-get install build-essential
+  - git clone git@github.com:golang/go.git ~/go
+  - cd /opt/go/src && ./all.bash
+  - mkdir -p ~/src/github.com/DavidHuie
+  - ln -s `pwd` ~/src/github.com/DavidHuie/quartz
+env:
+  - GOROOT=~/go GOPATH=~/
 script:
   - bundle exec rake
   - go test ./go/quartz

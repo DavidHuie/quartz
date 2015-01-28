@@ -1,5 +1,4 @@
 require 'simplecov'
-require 'byebug'
 
 ENV['COVERAGE'] && SimpleCov.start
 
