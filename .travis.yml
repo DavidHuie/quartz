@@ -5,7 +5,6 @@ rvm:
   - 2.1.5
   - 2.2.0
 before_script:
-  - bundle install
   - sudo apt-get install build-essential
   - git clone --branch=go1.4.1 --depth=1 https://github.com/golang/go.git ~/go
   - pushd ~/go/src && ./make.bash && popd
