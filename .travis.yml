@@ -8,11 +8,11 @@ before_script:
   - bundle install
   - sudo apt-get install build-essential
   - git clone --branch=go1.4.1 --depth=1 https://github.com/golang/go.git ~/go
-  - cd ~/go/src && ./all.bash
+  - pushd ~/go/src && ./make.bash && popd 2>/dev/null
   - mkdir -p ~/src/github.com/DavidHuie
   - ln -s `pwd` ~/src/github.com/DavidHuie/quartz
 env:
-  - GOROOT=~/go GOPATH=~/
+  - GOROOT=~/go GOPATH=~/ PATH=$GOROOT/bin:$GOPATH/bin:$PATH
 script:
   - bundle exec rake
   - go test ./go/quartz
