@@ -48,3 +48,4 @@ pkg
 # For rubinius:
 #*.rbc
 profile
+tmp
