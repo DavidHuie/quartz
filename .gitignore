@@ -49,3 +49,6 @@ pkg
 #*.rbc
 profile
 tmp
+
+# For go test artifacts
+*.test
