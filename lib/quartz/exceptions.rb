@@ -1,9 +1,7 @@
 module Quartz
-  class Exception < StandardError; end
-
-  class ResponseError < Exception; end
-  class ConfigError < Exception; end
-  class ArgumentError < Exception; end
-  class GoServerError < Exception; end
-  class GoResponseError < Exception; end
+  class ArgumentError < StandardError; end
+  class ConfigError < StandardError; end
+  class GoResponseError < StandardError; end
+  class GoServerError < StandardError; end
+  class ResponseError < StandardError; end
 end

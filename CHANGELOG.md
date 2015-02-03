@@ -1,3 +1,6 @@
+# 0.2.6 (unreleased)
+- [#13] Meaningful exception types
+
 # 0.2.5
 - [#12] Make seeds in Go process wrappers threadsafe
 - Destroy socket files upon exit inside Go processes
