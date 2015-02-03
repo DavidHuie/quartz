@@ -9,5 +9,5 @@ func RegisterName(name string, s interface{}) error {
 }
 
 func Start(socketPath string) {
-	quartz.Start()
+	quartz.Start(socketPath)
 }
