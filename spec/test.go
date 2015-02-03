@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"os"
 
 	"github.com/DavidHuie/quartz/go/quartz"
 )
@@ -27,7 +28,9 @@ func (t *Test) AddError(args Args, response *Response) error {
 }
 
 func main() {
+	socket_path := os.Args[1]
+
 	a := &Test{}
 	quartz.RegisterName("adder", a)
-	quartz.Start()
+	quartz.Start(socket_path)
 }

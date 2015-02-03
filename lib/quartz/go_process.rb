@@ -9,12 +9,11 @@ class Quartz::GoProcess
   def initialize(opts)
     @seed = SecureRandom.hex
     @socket_path = "/tmp/quartz_#{seed}.sock"
-    ENV['QUARTZ_SOCKET'] = @socket_path
 
     if opts[:file_path]
       compile_and_run(opts[:file_path])
     elsif opts[:bin_path]
-      @go_process = IO.popen(opts[:bin_path])
+      @go_process = IO.popen([opts[:bin_path], socket_path])
     else
       raise Quartz::ConfigError, 'Missing go binary'
     end
@@ -30,7 +29,7 @@ class Quartz::GoProcess
       raise Quartz::ConfigError, 'Go compilation failed'
     end
 
-    @go_process = IO.popen(@temp_file_path)
+    @go_process = IO.popen([@temp_file_path, socket_path])
   end
 
   def pid
