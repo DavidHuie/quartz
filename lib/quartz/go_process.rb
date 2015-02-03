@@ -44,7 +44,7 @@ class Quartz::GoProcess
   def block_until_server_starts
     max_retries = 10
     retries = 0
-    delay = 0.1 # seconds
+    delay = 0.005 # seconds
 
     loop do
       raise Quartz::GoServerError, 'RPC server not starting' if retries > max_retries
