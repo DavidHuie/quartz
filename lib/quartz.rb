@@ -3,7 +3,6 @@ require 'securerandom'
 require 'socket'
 
 module Quartz
-  class ResponseError < StandardError; end
 end
 
 require 'quartz/exceptions'
