@@ -16,7 +16,7 @@ class Quartz::GoProcess
     elsif opts[:bin_path]
       @go_process = IO.popen(opts[:bin_path])
     else
-      raise 'Missing go binary'
+      raise Quartz::ConfigError, 'Missing go binary'
     end
 
     block_until_server_starts
@@ -27,7 +27,7 @@ class Quartz::GoProcess
     @temp_file_path = "/tmp/quartz_runner_#{seed}"
 
     unless system('go', 'build', '-o', @temp_file_path, path)
-      raise 'Go compilation failed'
+      raise Quartz::ConfigError, 'Go compilation failed'
     end
 
     @go_process = IO.popen(@temp_file_path)
@@ -47,7 +47,7 @@ class Quartz::GoProcess
     delay = 0.1 # seconds
 
     loop do
-      raise 'RPC server not starting' if retries > max_retries
+      raise Quartz::GoServerError, 'RPC server not starting' if retries > max_retries
       return if File.exists?(@socket_path)
       sleep(delay * retries * 2**retries)
       retries += 1
@@ -67,7 +67,7 @@ class Quartz::GoProcess
     response = read
 
     if response['error']
-      raise "Metadata error: #{read['error']}"
+      raise Quartz::GoResponseError, "Metadata error: #{read['error']}"
     end
 
     response['result']

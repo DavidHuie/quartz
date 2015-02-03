@@ -7,7 +7,7 @@ module Quartz::Validations
       File.exist?(File.join(directory, 'go'))
     end
 
-    raise 'Go not installed.' unless go_exists
+    raise Quartz::ConfigError, 'Go not installed.' unless go_exists
   end
 
   def self.check_go_quartz_version
@@ -18,7 +18,7 @@ module Quartz::Validations
     end[0]
 
     unless installed_quartz_dir
-      raise "GOPATH not configured."
+      raise Quartz::ConfigError, "GOPATH not configured."
     end
 
     installed_quartz = File.read(File.join(installed_quartz_dir,
