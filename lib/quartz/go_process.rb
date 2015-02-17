@@ -42,14 +42,14 @@ class Quartz::GoProcess
   end
 
   def block_until_server_starts
-    max_retries = 67 # for delay of 0.001 it's about 102.374 sec
+    max_retries = 20
     retries = 0
     delay = 0.001 # seconds
 
     loop do
       return if File.exists?(@socket_path)
       raise Quartz::GoServerError, 'RPC server not starting' if retries > max_retries
-      sleep(delay * retries * 2**retries)
+      sleep(delay * 2**retries)
       retries += 1
     end
   end

@@ -1,5 +1,6 @@
 # 0.2.6 (unreleased)
 - [#13] Meaningful exception types
+- [#20] Speed up Go Quartz process boot time
 
 # 0.2.5
 - [#12] Make seeds in Go process wrappers threadsafe
