@@ -42,9 +42,9 @@ class Quartz::GoProcess
   end
 
   def block_until_server_starts
-    max_retries = 7 # for delay of 0.005 it's about 7,69 sec
+    max_retries = 67 # for delay of 0.001 it's about 102.374 sec
     retries = 0
-    delay = 0.005 # seconds
+    delay = 0.001 # seconds
 
     loop do
       return if File.exists?(@socket_path)
