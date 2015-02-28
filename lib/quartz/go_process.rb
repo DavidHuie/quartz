@@ -83,6 +83,12 @@ class Quartz::GoProcess
     read
   end
 
+  if RUBY_VERSION == '1.9.3'
+    READ_EXCEPTION  = IO::WaitReadable
+  else
+    READ_EXCEPTION  = IO::EAGAINWaitReadable
+  end
+
   MAX_MESSAGE_SIZE = 8192 # Bytes
 
   def read
@@ -91,7 +97,7 @@ class Quartz::GoProcess
       begin
         value << socket.recv_nonblock(MAX_MESSAGE_SIZE)
         break if value.end_with?("\n")
-      rescue IO::EAGAINWaitReadable
+      rescue READ_EXCEPTION
         IO.select([socket], [], [])
       end
     end
