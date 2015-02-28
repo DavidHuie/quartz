@@ -14,7 +14,7 @@ class Quartz::GoStruct
     @struct_methods = @method_name_to_arg_info.keys
   end
 
-  def call(method_name, args)
+  def call(method_name, args = {})
     unless @struct_methods.include?(method_name)
       raise Quartz::ArgumentError, "Invalid method: #{method_name}"
     end
