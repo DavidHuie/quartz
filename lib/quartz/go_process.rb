@@ -83,10 +83,20 @@ class Quartz::GoProcess
     read
   end
 
-  MAX_MESSAGE_SIZE = 1_000_000_000 # Bytes
+  MAX_MESSAGE_SIZE = 8192 # Bytes
 
   def read
-    JSON(socket.recv(MAX_MESSAGE_SIZE))
+    value = ''
+    loop do
+      begin
+        value << socket.recv_nonblock(MAX_MESSAGE_SIZE)
+        break if value.end_with?("\n")
+      rescue IO::EAGAINWaitReadable
+        IO.select([socket], [], [])
+      end
+    end
+
+    JSON(value)
   end
 
   def cleanup
