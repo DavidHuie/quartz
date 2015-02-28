@@ -83,7 +83,7 @@ class Quartz::GoProcess
     read
   end
 
-  if RUBY_VERSION == '1.9.3'
+  if ['1.9.3', '2.0.0'].include?(RUBY_VERSION)
     READ_EXCEPTION  = IO::WaitReadable
   else
     READ_EXCEPTION  = IO::EAGAINWaitReadable
