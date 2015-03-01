@@ -12,6 +12,7 @@ class Quartz::GoProcess
     ENV['QUARTZ_SOCKET'] = @socket_path
 
     if opts[:file_path]
+      Quartz::Validations.check_for_go
       compile_and_run(opts[:file_path])
     elsif opts[:bin_path]
       @go_process = IO.popen(opts[:bin_path])
