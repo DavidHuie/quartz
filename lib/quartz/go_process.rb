@@ -118,6 +118,7 @@ class Quartz::GoProcess
   end
 
   def self.cleanup
+    return unless @processes
     @processes.each(&:cleanup)
     @processes = []
   end
