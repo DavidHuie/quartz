@@ -68,7 +68,7 @@ class Quartz::GoProcess
     response = read
 
     if response['error']
-      raise Quartz::GoResponseError, "Metadata error: #{read['error']}"
+      raise Quartz::GoResponseError, "Metadata error: #{response['error']}"
     end
 
     response['result']
