@@ -1,3 +1,6 @@
+# 0.3.0
+- [#29] *MultiJson* usage. *Oj* gem installation is suggested for best performance
+
 # 0.2.7
 - [#28] Handle lack of Go processes gracefully at exit
 - [#28] Don't validate GOPATH

@@ -1,3 +1,5 @@
+require 'multi_json'
+
 class Quartz::GoProcess
 
   attr_reader :seed, :socket_path, :temp_file_path
@@ -64,7 +66,7 @@ class Quartz::GoProcess
       'id' => 1
     }
 
-    socket.send(payload.to_json, 0)
+    socket.send(MultiJson.dump(payload), 0)
     response = read
 
     if response['error']
@@ -80,7 +82,7 @@ class Quartz::GoProcess
       'params' => [args],
       'id' => 1
     }
-    socket.send(payload.to_json, 0)
+    socket.send(MultiJson.dump(payload), 0)
     read
   end
 
@@ -103,7 +105,7 @@ class Quartz::GoProcess
       end
     end
 
-    JSON(value)
+    MultiJson.load(value)
   end
 
   def cleanup
