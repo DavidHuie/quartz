@@ -65,17 +65,20 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<rspec>, ["~> 3.1"])
       s.add_development_dependency(%q<ruby-prof>, ["~> 0.15"])
       s.add_development_dependency(%q<simplecov>, ["~> 0.9"])
+      s.add_development_dependency(%q<multi_json>, ["~> 1.4"])
     else
       s.add_dependency(%q<jeweler>, ["~> 2.0"])
       s.add_dependency(%q<rspec>, ["~> 3.1"])
       s.add_dependency(%q<ruby-prof>, ["~> 0.15"])
       s.add_dependency(%q<simplecov>, ["~> 0.9"])
+      s.add_dependency(%q<multi_json>, ["~> 1.4"])
     end
   else
     s.add_dependency(%q<jeweler>, ["~> 2.0"])
     s.add_dependency(%q<rspec>, ["~> 3.1"])
     s.add_dependency(%q<ruby-prof>, ["~> 0.15"])
     s.add_dependency(%q<simplecov>, ["~> 0.9"])
+    s.add_dependency(%q<multi_json>, ["~> 1.4"])
   end
 end
 
