@@ -36,13 +36,7 @@ func (q *Quartz) RegisterName(name string, s interface{}) error {
 	return rpc.RegisterName(name, s)
 }
 
-func (q *Quartz) Start() {
-	// The Ruby gem sets this environment variable for us.
-	socketPath := "/tmp/quartz.socket"
-	if os.Getenv("QUARTZ_SOCKET") != "" {
-		socketPath = os.Getenv("QUARTZ_SOCKET")
-	}
-
+func (q *Quartz) Start(socketPath string) {
 	// Start the server and accept connections on a
 	// UNIX domain socket.
 	rpc.RegisterName("Quartz", q.Registry)
