@@ -10,7 +10,8 @@ class Quartz::GoProcess
 
   def initialize(opts)
     @seed = SecureRandom.hex
-    @socket_path = "/tmp/quartz_#{seed}.sock"
+    socket_dir = opts.fetch(:socket_dir) { '/tmp' }
+    @socket_path = File.join(socket_dir, "quartz_#{seed}.sock")
     ENV['QUARTZ_SOCKET'] = @socket_path
 
     if opts[:file_path]

@@ -34,6 +34,25 @@ describe Quartz::GoProcess do
     File.delete(temp_file)
   end
 
+  context 'when custom socket directory is used' do
+
+    before { Dir.mkdir(socket_dir) unless File.directory?(socket_dir) }
+
+    let(:socket_dir) { '/tmp/x' }
+    let(:process) { Quartz::GoProcess.new(file_path: 'spec/test.go', socket_dir: socket_dir) }
+
+    it 'works with custom socket directory' do
+      expect(File.exists?(process.socket_path)).to be_truthy
+      process.cleanup
+      expect(File.exists?(process.socket_path)).to be_falsey
+    end
+
+    it 'creates the socket in the socket dir' do
+      expect(process.socket_path).to match(/^#{socket_dir}\/quartz_[a-f\d]+\.sock/)
+    end
+
+  end
+
   describe '.cleanup' do
 
     context 'files' do
