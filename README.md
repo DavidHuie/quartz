@@ -127,4 +127,4 @@ client = Quartz::Client.new(bin_path: 'my_adder_binary', socket_dir: '/apps/my_a
 
 ## Copyright
 
-Copyright (c) 2014 David Huie. See LICENSE.txt for further details.
+Copyright (c) 2018 David Huie. See LICENSE.txt for further details.

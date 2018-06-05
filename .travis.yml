@@ -1,17 +1,12 @@
 language: ruby
 rvm:
-  - 1.9.3
-  - 2.0.0
-  - 2.1.5
-  - 2.2.0
+  - 2.5.1
 before_script:
   - sudo apt-get install build-essential
-  - git clone --branch=go1.4.1 --depth=1 https://github.com/golang/go.git ~/go
-  - pushd ~/go/src && ./make.bash && popd
+  - pushd /tmp && wget https://dl.google.com/go/go1.10.2.linux-amd64.tar.gz && tar -xf go1.10.2.linux-amd64.tar.gz && sudo cp -R go /usr/local/ && popd
   - mkdir -p ~/src/github.com/DavidHuie
   - ln -s `pwd` ~/src/github.com/DavidHuie/quartz
 env:
-  - GOROOT=~/go GOPATH=~/ PATH=$GOROOT/bin:$GOPATH/bin:$PATH
+  - GOROOT=/usr/local/go GOPATH=~/ PATH=$GOROOT/bin:$GOPATH/bin:$PATH
 script:
   - bundle exec rake
-  - go test ./go/quartz
