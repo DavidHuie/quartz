@@ -7,10 +7,11 @@ import (
 	"os"
 	"os/signal"
 	"reflect"
+	"strings"
 	"syscall"
 )
 
-// This holds information about exported structs.
+// Quartz holds information about exported structs.
 type Quartz struct {
 	Registry *Registry
 }
@@ -19,7 +20,8 @@ func newQuartz() *Quartz {
 	return &Quartz{newRegistry()}
 }
 
-// Exports a struct via RPC and generates metadata for each of the struct's methods.
+// RegisterName exports a struct via RPC and generates metadata for
+// each of the struct's methods.
 func (q *Quartz) RegisterName(name string, s interface{}) error {
 	q.Registry.data[name] = newStructMetadata(s)
 	t := reflect.TypeOf(s)
@@ -36,6 +38,7 @@ func (q *Quartz) RegisterName(name string, s interface{}) error {
 	return rpc.RegisterName(name, s)
 }
 
+// Start launches the server.
 func (q *Quartz) Start() {
 	// The Ruby gem sets this environment variable for us.
 	socketPath := "/tmp/quartz.socket"
@@ -67,6 +70,10 @@ func (q *Quartz) Start() {
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
+			// The connection was closed by a signal.
+			if strings.Contains(err.Error(), "use of closed network connection") {
+				return
+			}
 			panic(err)
 		}
 		go jsonrpc.ServeConn(conn)
