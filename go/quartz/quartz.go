@@ -1,19 +1,19 @@
 package quartz
 
 import (
+	"log"
 	"net"
 	"net/rpc"
 	"net/rpc/jsonrpc"
 	"os"
 	"os/signal"
 	"reflect"
-	"strings"
 	"syscall"
 )
 
 // Quartz holds information about exported structs.
 type Quartz struct {
-	Registry *Registry
+	registry *registry
 }
 
 func newQuartz() *Quartz {
@@ -23,23 +23,28 @@ func newQuartz() *Quartz {
 // RegisterName exports a struct via RPC and generates metadata for
 // each of the struct's methods.
 func (q *Quartz) RegisterName(name string, s interface{}) error {
-	q.Registry.data[name] = newStructMetadata(s)
+	meta := newStructMetadata(s)
 	t := reflect.TypeOf(s)
+
+	// Register all public methods.
 	for i := 0; i < t.NumMethod(); i++ {
 		method := t.Method(i)
-		// TODO: only export methods with JSON serializable arguments
-		// and responses.
 		metadata := &methodMetadata{
 			method,
 			structFieldToType(method.Type.In(1)),
 		}
-		q.Registry.data[name].NameToMethodMetadata[method.Name] = metadata
+		meta.NameToMethodMetadata[method.Name] = metadata
 	}
+
+	q.registry.addMetadata(name, meta)
+
 	return rpc.RegisterName(name, s)
 }
 
 // Start launches the server.
 func (q *Quartz) Start() {
+	log.SetOutput(os.Stderr)
+
 	// The Ruby gem sets this environment variable for us.
 	socketPath := "/tmp/quartz.socket"
 	if os.Getenv("QUARTZ_SOCKET") != "" {
@@ -48,34 +53,40 @@ func (q *Quartz) Start() {
 
 	// Start the server and accept connections on a
 	// UNIX domain socket.
-	rpc.RegisterName("Quartz", q.Registry)
+	rpc.RegisterName("Quartz", q.registry)
 	listener, err := net.Listen("unix", socketPath)
 	if err != nil {
 		panic(err)
 	}
 
-	// Destroy the socket file when the server is killed.
+	// Close the socket when the server is killed.
+	quit := make(chan struct{})
 	sigc := make(chan os.Signal)
-	signal.Notify(sigc, syscall.SIGTERM)
+	signal.Notify(sigc, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
 	go func() {
 		<-sigc
-		err := listener.Close()
-		if err != nil {
-			panic(err)
+		if err := listener.Close(); err != nil {
+			log.Printf("error closing listener: %s", err)
 		}
-		os.Exit(0)
+
+		close(quit)
 	}()
 
-	// Accept connections
+Loop:
 	for {
+		select {
+		case <-quit:
+			break Loop
+		default:
+		}
+
 		conn, err := listener.Accept()
 		if err != nil {
-			// The connection was closed by a signal.
-			if strings.Contains(err.Error(), "use of closed network connection") {
-				return
-			}
-			panic(err)
+			log.Printf("error accepting connection: %s", err)
+			continue
 		}
 		go jsonrpc.ServeConn(conn)
 	}
+
+	os.Exit(0)
 }
