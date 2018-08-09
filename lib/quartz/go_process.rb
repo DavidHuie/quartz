@@ -8,6 +8,10 @@ class Quartz::GoProcess
     @processes ||= []
   end
 
+  def self.clear_processes
+    @processes = []
+  end
+
   def initialize(opts)
     @seed = SecureRandom.hex
     socket_dir = opts.fetch(:socket_dir) { '/tmp' }
