@@ -12,6 +12,15 @@ class Quartz::GoProcess
     @processes = []
   end
 
+  def forked_mode!
+    if @forked.nil?
+      @forked = true
+      return
+    end
+
+    @forked = !@forked
+  end
+
   def initialize(opts)
     @seed = SecureRandom.hex
     socket_dir = opts.fetch(:socket_dir) { '/tmp' }
@@ -114,6 +123,10 @@ class Quartz::GoProcess
   end
 
   def cleanup
+    # If we've forked, there's no need to cleanup since the parent
+    # process will.
+    return if @forked
+
     unless @killed_go_process
       Process.kill('SIGTERM', pid)
       Process.wait(pid)

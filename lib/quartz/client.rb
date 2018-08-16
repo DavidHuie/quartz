@@ -16,4 +16,8 @@ class Quartz::Client
     @structs.keys
   end
 
+  def forked_mode!
+    @process.forked_mode!
+  end
+
 end

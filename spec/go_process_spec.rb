@@ -70,7 +70,20 @@ describe Quartz::GoProcess do
       it "it kills child processes" do
         expect(File.exists?(process.temp_file_path)).to be_truthy
         process.cleanup
+        expect(File.exists?(process.temp_file_path)).to be_falsey
         expect($?.exited?).to be_truthy
+      end
+
+      it 'does not kill child processes if forked' do
+        expect(File.exists?(process.temp_file_path)).to be_truthy
+        process
+        process.forked_mode!
+        process.cleanup
+        expect(File.exists?(process.temp_file_path)).to be_truthy
+
+        process.forked_mode!
+        process.cleanup
+        expect(File.exists?(process.temp_file_path)).to be_falsey
       end
 
     end
