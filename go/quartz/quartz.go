@@ -1,6 +1,7 @@
 package quartz
 
 import (
+	"fmt"
 	"net"
 	"net/rpc"
 	"net/rpc/jsonrpc"
@@ -56,13 +57,11 @@ func (q *Quartz) Start() {
 
 	// Destroy the socket file when the server is killed.
 	sigc := make(chan os.Signal)
-	signal.Notify(sigc, syscall.SIGTERM)
+	signal.Notify(sigc, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT)
 	go func() {
 		<-sigc
-		err := listener.Close()
-		if err != nil {
-			panic(err)
-		}
+		listener.Close()
+		os.Remove(socketPath)
 		os.Exit(0)
 	}()
 
@@ -74,8 +73,19 @@ func (q *Quartz) Start() {
 			if strings.Contains(err.Error(), "use of closed network connection") {
 				return
 			}
-			panic(err)
+
+			fmt.Fprintf(os.Stderr, "error accepting connection: %s", err)
+			continue
 		}
-		go jsonrpc.ServeConn(conn)
+
+		go func() {
+			defer func() {
+				if r := recover(); r != nil {
+					fmt.Fprintf(os.Stderr, "Recovered from panic: %s", r)
+				}
+			}()
+
+			jsonrpc.ServeConn(conn)
+		}()
 	}
 }
