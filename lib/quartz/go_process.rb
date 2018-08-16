@@ -24,7 +24,7 @@ class Quartz::GoProcess
   def initialize(opts)
     @seed = SecureRandom.hex
     socket_dir = opts.fetch(:socket_dir) { '/tmp' }
-    @socket_path = File.join(socket_dir, "quartz_#{seed}.sock")
+    @socket_path = opts[:socket_path] || File.join(socket_dir, "quartz_#{seed}.sock")
     ENV['QUARTZ_SOCKET'] = @socket_path
 
     if opts[:file_path]
@@ -32,6 +32,8 @@ class Quartz::GoProcess
       compile_and_run(opts[:file_path])
     elsif opts[:bin_path]
       @go_process = IO.popen(opts[:bin_path])
+    elsif opts[:socket_path]
+      @external_socket = true
     else
       raise Quartz::ConfigError, 'Missing go binary'
     end
@@ -126,6 +128,9 @@ class Quartz::GoProcess
     # If we've forked, there's no need to cleanup since the parent
     # process will.
     return if @forked
+
+    # If the Go process is managed externally, there's nothing to do.
+    return if @external_socket
 
     unless @killed_go_process
       Process.kill('SIGTERM', pid)

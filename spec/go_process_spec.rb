@@ -7,11 +7,14 @@ describe Quartz::GoProcess do
   describe '#get_metadata' do
 
     context 'with a go file' do
-
       it 'pulls metadata' do
         expect(process.get_metadata).to eq("adder" => {"NameToMethodMetadata"=>{"Add"=>{"ArgumentToType"=>{"A"=>"int", "B"=>"int"}}, "AddError"=>{"ArgumentToType"=>{"A"=>"int", "B"=>"int"}}}})
       end
 
+      it 'pulls metadata from the recycled socket' do
+        new_process = Quartz::GoProcess.new(socket_path: process.socket_path)
+        expect(new_process.socket_path).to eq(process.socket_path)
+      end
     end
 
   end
@@ -49,6 +52,23 @@ describe Quartz::GoProcess do
 
     it 'creates the socket in the socket dir' do
       expect(process.socket_path).to match(/^#{socket_dir}\/quartz_[a-f\d]+\.sock/)
+    end
+
+  end
+
+  context 'with a custom socket path' do
+
+    let(:new_process) { Quartz::GoProcess.new(socket_path: process.socket_path) }
+
+    it 'the new process does not clean up the existing socket' do
+      expect(File.exists?(new_process.socket_path)).to be_truthy
+      new_process.cleanup
+      expect(File.exists?(new_process.socket_path)).to be_truthy
+    end
+
+    it 'creates the socket in the socket dir' do
+      result = new_process.call('adder', 'Add', { 'A' => 5, 'B' => 6 })
+      expect(result).to eq({"id"=>1, "result"=>{"X"=>11}, "error"=>nil})
     end
 
   end

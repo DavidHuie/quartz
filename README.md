@@ -125,6 +125,19 @@ you can pass the `socket_dir` option.
 client = Quartz::Client.new(bin_path: 'my_adder_binary', socket_dir: '/apps/my_app/tmp')
 ```
 
+If you want to manage the Go process manually, you can use the
+following system to set the socket path manually. Now, you can use
+Systemd/Kubernetes/etc. to manage the Go process.
+
+```shell
+$ QUARTZ_SOCKET=/tmp/custom.sock ./go_process
+```
+
+```ruby
+client = Quartz::Client.new(socket_path: '/tmp/custom.sock')
+
+```
+
 ## Copyright
 
 Copyright (c) 2018 David Huie. See LICENSE.txt for further details.
