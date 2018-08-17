@@ -15,10 +15,11 @@ class Quartz::GoProcess
   def forked_mode!
     if @forked.nil?
       @forked = true
-      return
+    else
+      @forked = !@forked
     end
 
-    @forked = !@forked
+    new_socket! if @forked
   end
 
   def initialize(opts)
@@ -54,6 +55,10 @@ class Quartz::GoProcess
 
   def pid
     @go_process.pid
+  end
+
+  def new_socket!
+    Thread.current["quartz_socket_#{seed}".to_sym] = UNIXSocket.new(@socket_path)
   end
 
   def socket

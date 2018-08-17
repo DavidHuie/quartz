@@ -73,6 +73,14 @@ describe Quartz::GoProcess do
 
   end
 
+  describe '#forked_mode' do
+    it 'creates a new socket' do
+      socket = process.socket
+      process.forked_mode!
+      expect(process.socket).not_to eq(socket)
+    end
+  end
+
   describe '.cleanup' do
 
     context 'files' do
