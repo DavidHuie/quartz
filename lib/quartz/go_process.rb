@@ -103,7 +103,17 @@ class Quartz::GoProcess
       'params' => [args],
       'id' => 1
     }
-    socket.send(MultiJson.dump(payload), 0)
+
+    begin
+      socket.send(MultiJson.dump(payload), 0)
+    rescue Errno::EPIPE
+      # Retry send with a new socket. We might trigger this if Go
+      # process restarted.  There's a good chance that this raises the
+      # exact same error.
+      new_socket!
+      socket.send(MultiJson.dump(payload), 0)
+    end
+
     read
   end
 
@@ -123,6 +133,8 @@ class Quartz::GoProcess
         break if value.end_with?("\n")
       rescue READ_EXCEPTION
         IO.select([socket], [], [])
+      rescue Errno::EPIPE
+        new_socket!
       end
     end
 
